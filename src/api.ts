@@ -1,6 +1,9 @@
 import type { PortfolioData, AIResponse } from "./types";
 
-const API_BASE = "/api";
+// In dev: "/api" (proxied by Vite). In prod: full Worker URL from env.
+const API_BASE = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "/api";
 
 export async function fetchPortfolioData(): Promise<PortfolioData> {
     const res = await fetch(`${API_BASE}/data`);
