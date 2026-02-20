@@ -17,6 +17,11 @@ export async function askAI(message: string): Promise<AIResponse> {
         body: JSON.stringify({ message }),
     });
 
+    // Handle rate limit (429) — return the body so UI can show the message
+    if (res.status === 429) {
+        return res.json() as Promise<AIResponse>;
+    }
+
     if (!res.ok) {
         throw new Error(`AI request failed: ${res.status}`);
     }

@@ -23,6 +23,7 @@ export function Terminal(): JSX.Element {
     const [bootDone, setBootDone] = useState(false);
     const [guideDone, setGuideDone] = useState(false);
     const [acIdx, setAcIdx] = useState(-1);
+    const [aiCredits, setAiCredits] = useState(5);
 
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -89,6 +90,11 @@ export function Terminal(): JSX.Element {
 
             try {
                 const response = await askAI(userMessage);
+
+                // Track remaining AI credits
+                if (response.remaining !== undefined) {
+                    setAiCredits(response.remaining);
+                }
 
                 // Auto-open URL if AI returned one
                 if (response.openUrl) {
@@ -401,37 +407,52 @@ export function Terminal(): JSX.Element {
                 </div>
             )}
 
-            {/* AI Disclaimer */}
+            {/* AI Disclaimer + Credits */}
             <div
                 style={{
                     padding: "5px 20px",
-                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     fontSize: 11,
                     color: "#f8a0a0",
                     borderTop: `1px solid ${COLORS.border}`,
                 }}
             >
-                ⚠ AI can make mistakes. Use / for commands suggestions or type{" "}
+                <span>
+                    ⚠ AI can make mistakes. Use / for commands suggestions or type{" "}
+                    <span
+                        onClick={() => {
+                            setInput("help");
+                            handleSubmit();
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        style={{
+                            color: COLORS.accentGreen,
+                            fontWeight: 700,
+                            background: `${COLORS.accentGreen}15`,
+                            border: `1px solid ${COLORS.accentGreen}40`,
+                            borderRadius: 3,
+                            padding: "1px 8px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        help
+                    </span>{" "}
+                    for better accuracy.
+                </span>
                 <span
-                    onClick={() => {
-                        setInput("help");
-                        handleSubmit();
-                    }}
-                    role="button"
-                    tabIndex={0}
                     style={{
-                        color: COLORS.accentGreen,
+                        color: aiCredits <= 1 ? COLORS.accentRed : aiCredits <= 3 ? COLORS.accentOrange : COLORS.accentGreen,
                         fontWeight: 700,
-                        background: `${COLORS.accentGreen}15`,
-                        border: `1px solid ${COLORS.accentGreen}40`,
-                        borderRadius: 3,
-                        padding: "1px 8px",
-                        cursor: "pointer",
+                        fontSize: 10,
+                        whiteSpace: "nowrap",
+                        marginLeft: 12,
                     }}
                 >
-                    help
-                </span>{" "}
-                for better accuracy.
+                    🤖 {aiCredits}/5 AI prompts left today
+                </span>
             </div>
 
             {/* Status bar */}

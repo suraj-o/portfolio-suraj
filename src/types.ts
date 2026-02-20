@@ -14,6 +14,7 @@ export interface Skills {
     Backend: string[];
     Frontend: string[];
     DevOps: string[];
+    AI: string[];
 }
 
 export interface ExperienceEntry {
@@ -53,6 +54,7 @@ export interface AIResponse {
     message: string;
     equivalentCmd: string;
     openUrl?: string;
+    remaining: number;
 }
 
 // ─── Terminal state types ───
